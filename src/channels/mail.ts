@@ -1,5 +1,5 @@
-import { BaseMail } from "@adonisjs/mail";
-import { MailChannelConfig, MailChannelContract, NotifiableModel } from "../types.js";
+import { BaseMail } from '@adonisjs/mail'
+import { MailChannelConfig, MailChannelContract, NotifiableModel } from '../types.js'
 
 class MailChannel implements MailChannelContract {
   constructor(_config: MailChannelConfig) {}

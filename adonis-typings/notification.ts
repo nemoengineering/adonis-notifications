@@ -102,9 +102,7 @@ declare module '@ioc:Verful/Notification' {
     driver: 'mail'
   }
 
-  export interface DatabaseChannelConfig {
-
-  }
+  export interface DatabaseChannelConfig {}
 
   export interface NotificationChannels {
     database: {

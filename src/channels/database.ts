@@ -1,4 +1,4 @@
-import { DatabaseChannelConfig, DatabaseChannelContract, NotifiableModel } from "../types.js";
+import { DatabaseChannelConfig, DatabaseChannelContract, NotifiableModel } from '../types.js'
 
 export class DatabaseChannel implements DatabaseChannelContract {
   constructor(_config: DatabaseChannelConfig) {}
@@ -9,4 +9,3 @@ export class DatabaseChannel implements DatabaseChannelContract {
     })
   }
 }
-

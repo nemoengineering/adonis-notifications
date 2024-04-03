@@ -1,8 +1,7 @@
-
 import RoutesNotifications from './routes_notifications.js'
-import { NotifiableMixin } from "../types.js";
-import { compose } from "@poppinss/utils";
-import HasDatabaseNotifications from "./has_database_notifications.js";
+import { NotifiableMixin } from '../types.js'
+import { compose } from '@poppinss/utils'
+import HasDatabaseNotifications from './has_database_notifications.js'
 
 /**
  * This trait is used to add the hability to notify a model using any channel

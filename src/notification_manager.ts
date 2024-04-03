@@ -1,23 +1,29 @@
-import { EmitterLike } from "@adonisjs/core/types/events";
+import { EmitterLike } from '@adonisjs/core/types/events'
 import {
   NotifiableModel,
-   NotificationChannelContract,
+  NotificationChannelContract,
   NotificationConfig,
   NotificationContract,
   NotificationEvents,
-  NotificationManagerChannelFactory, ResponseType
-} from "./types.js";
-import debug from "./debug.js";
-import string from "@poppinss/utils/string";
+  NotificationManagerChannelFactory,
+  ResponseType,
+} from './types.js'
+import debug from './debug.js'
+import string from '@poppinss/utils/string'
 
-export class NotificationManager<KnownChannels extends Record<string, NotificationManagerChannelFactory>> {
+export class NotificationManager<
+  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
+> {
   #emitter: EmitterLike<NotificationEvents>
 
   #fakeChannel?: NotificationChannelContract
 
-  constructor(emitter: EmitterLike<NotificationEvents>, public config: NotificationConfig &{
-    channels: KnownChannels
-  }) {
+  constructor(
+    emitter: EmitterLike<NotificationEvents>,
+    public config: NotificationConfig & {
+      channels: KnownChannels
+    }
+  ) {
     debug('creating notification manager %O', config)
     this.#emitter = emitter
   }
@@ -58,7 +64,6 @@ export class NotificationManager<KnownChannels extends Record<string, Notificati
         continue
       }*/
 
-
       const response = await this.use(channel).send(message, notifiable)
       responses.push(response)
       this.#emitter.emit('notification:sent', { notification: message, notifiable, channel })
@@ -77,6 +82,4 @@ export class NotificationManager<KnownChannels extends Record<string, Notificati
   use<K extends keyof KnownChannels>(channelName: K): ReturnType<KnownChannels[K]> {
     return this.config.channels[channelName]() as ReturnType<KnownChannels[K]>
   }
-
-
 }

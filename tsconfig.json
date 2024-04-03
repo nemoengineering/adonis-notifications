@@ -4,8 +4,7 @@
     "rootDir": "./",
     "outDir": "./build",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["@types/node", "@adonisjs/core", "@adonisjs/lucid", "@adonisjs/mail"]
+    "emitDecoratorMetadata": true
   },
   "exclude": ["tests", "test-helpers", "adonis-typings", "bin", "commands", "instructions.ts"]
 }

@@ -1,4 +1,4 @@
-import { NotifiableModel, NotificationChannelContract, TrapCallback } from "../types.js";
+import { NotifiableModel, NotificationChannelContract, TrapCallback } from '../types.js'
 
 class FakeChannel implements NotificationChannelContract {
   constructor(private listener: TrapCallback) {}

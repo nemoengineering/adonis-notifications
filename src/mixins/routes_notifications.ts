@@ -1,19 +1,19 @@
-import { NotificationContract, RoutesNotificationsMixin } from "../types.js";
-import app from "@adonisjs/core/services/app";
+import { NotificationContract, RoutesNotificationsMixin } from '../types.js'
+import app from '@adonisjs/core/services/app'
 
 /**
  * This mixin is used to add the hability to notify a model using any channel, except database
  */
 const RoutesNotifications: RoutesNotificationsMixin = (superclass) => {
   return class extends superclass {
-    public async notify(notification: NotificationContract) {
-      const Notification = await app.container.make("notification.manager")
+    async notify(notification: NotificationContract) {
+      const Notification = await app.container.make('notification.manager')
       // @ts-expect-error
       await Notification.send(this, notification)
     }
 
-    public async notifyLater(notification: NotificationContract) {
-      const Notification = await app.container.make("notification.manager")
+    async notifyLater(notification: NotificationContract) {
+      const Notification = await app.container.make('notification.manager')
       // @ts-expect-error
       await Notification.sendLater(this, notification)
     }

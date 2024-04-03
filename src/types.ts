@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon'
-import { LucidModel, LucidRow } from "@adonisjs/lucid/types/model";
-import { HasMany } from "@adonisjs/lucid/types/relations";
-import { BaseMail } from "@adonisjs/mail";
-import {  ConfigProvider } from "@adonisjs/core/types";
-import { NormalizeConstructor } from '@adonisjs/core/types/helpers';
-import { NotificationManager } from './notification_manager.js';
+import { LucidModel, LucidRow } from '@adonisjs/lucid/types/model'
+import { HasMany } from '@adonisjs/lucid/types/relations'
+import { BaseMail } from '@adonisjs/mail'
+import { ConfigProvider } from '@adonisjs/core/types'
+import { NormalizeConstructor } from '@adonisjs/core/types/helpers'
+import { NotificationManager } from './notification_manager.js'
 
 export interface NotificationChannelContract {
   send(notification: any, notifiable: NotifiableType, ...extras: any[]): Promise<any>
@@ -17,7 +17,6 @@ export type NotificationEvents = {
 }
 
 export type NotificationConfig = {}
-
 
 type ChannelParams = Parameters<
   NotificationChannelsList[keyof NotificationChannelsList]['implementation']['send']
@@ -94,9 +93,7 @@ export interface HasDatabaseNotificationsMixin {
   }
 }
 
-export interface NotifiableModel
-  extends RoutesNotificationsModel,
-    HasDatabaseNotificationsModel {}
+export interface NotifiableModel extends RoutesNotificationsModel, HasDatabaseNotificationsModel {}
 
 export interface NotifiableMixin {
   <T extends NormalizeConstructor<LucidModel>>(
@@ -106,19 +103,12 @@ export interface NotifiableMixin {
   }
 }
 
-export interface MailChannelConfig {
-  driver: 'mail'
-}
+export interface MailChannelConfig {}
 
-export interface DatabaseChannelConfig {
-  driver: 'database'
-}
+export interface DatabaseChannelConfig {}
 
 export interface DatabaseChannelContract {
-  send(
-    notification: Record<string, any>,
-    notifiable: HasDatabaseNotificationsModel
-  ): Promise<void>
+  send(notification: Record<string, any>, notifiable: HasDatabaseNotificationsModel): Promise<void>
 }
 
 export interface MailChannelContract {
@@ -137,10 +127,16 @@ export interface MailChannelContract {
  */
 export interface NotificationChannelsList {}
 
-export type InferChannels<T extends ConfigProvider<{channels: Record<string, NotificationManagerChannelFactory> }>> = Awaited<ReturnType<T['resolver']>>['channels']
+export type InferChannels<
+  T extends ConfigProvider<{ channels: Record<string, NotificationManagerChannelFactory> }>,
+> = Awaited<ReturnType<T['resolver']>>['channels']
 
-export interface NotificationService extends NotificationManager<NotificationChannelsList extends Record<string, NotificationManagerChannelFactory> ? NotificationChannelsList : never> {}
-
+export interface NotificationService
+  extends NotificationManager<
+    NotificationChannelsList extends Record<string, NotificationManagerChannelFactory>
+      ? NotificationChannelsList
+      : never
+  > {}
 
 export type NotificationEventData = {
   notification: MessageType

@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import { createNotificationsTable, createUsersTable } from '../bin/test/database'
-import createNotificationModel from '../src/models/DatabaseNotification'
+import createNotificationModel from '../src/models/database_notification'
 
 test.group('DatabaseNotification', async (group) => {
   group.each.setup(async () => {
