@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 
 import type { MailConfig } from '@ioc:Adonis/Addons/Mail'
 import type { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'

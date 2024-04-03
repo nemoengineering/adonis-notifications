@@ -4,7 +4,7 @@ import { MailChannelConfig, MailChannelContract, NotifiableModel } from '../type
 class MailChannel implements MailChannelContract {
   constructor(_config: MailChannelConfig) {}
 
-  public async send(
+  async send(
     message: InstanceType<typeof BaseMail>,
     _notifiable: NotifiableModel,
     deferred: boolean = false

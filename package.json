@@ -2,12 +2,11 @@
   "name": "@verful/notifications",
   "description": "The easiest way to send notifications in AdonisJS",
   "version": "2.0.2",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/verful/notifications.git"
+  "engines": {
+    "node": ">=18.16.0"
   },
   "main": "build/index.js",
+  "type": "module",
   "files": [
     "build",
     "!build/bin",
@@ -24,13 +23,23 @@
     "./channels/mail": "./build/src/channels/mail.js",
     "./channels/fake": "./build/src/channels/fake.js"
   },
-  "license": "MIT",
-  "dependencies": {
-    "@poppinss/manager": "^5.0.2",
-    "@poppinss/utils": "^6.7.3",
-    "fastq": "^1.17.1",
-    "luxon": "^3.4.4",
-    "pluralize": "^8.0.0"
+  "scripts": {
+    "pretest": "npm run lint",
+    "test": "c8 npm run quick:test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "del-cli build",
+    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "postcompile": "npm run copy:templates && npm run index:commands",
+    "build": "npm run compile",
+    "release": "np",
+    "version": "npm run build",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "index:commands": "adonis-kit index build/commands",
+    "quick:test": "NODE_DEBUG=\"adonisjs:mail\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json verful/notifications"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.4.0",
@@ -63,6 +72,13 @@
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
   },
+  "dependencies": {
+    "@poppinss/manager": "^5.0.2",
+    "@poppinss/utils": "^6.7.3",
+    "fastq": "^1.17.1",
+    "luxon": "^3.4.4",
+    "pluralize": "^8.0.0"
+  },
   "peerDependencies": {
     "@adonisjs/core": "^6.2.0",
     "@adonisjs/lucid": "^20.5.1",
@@ -76,25 +92,10 @@
       "optional": true
     }
   },
-  "scripts": {
-    "pretest": "npm run lint",
-    "test": "c8 npm run quick:test",
-    "lint": "eslint .",
-    "clean": "del-cli build",
-    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
-    "postcompile": "npm run copy:templates && npm run index:commands",
-    "build": "npm run compile",
-    "release": "np",
-    "version": "npm run build",
-    "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "index:commands": "adonis-kit index build/commands",
-    "quick:test": "NODE_DEBUG=\"adonisjs:mail\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json verful/notifications"
-  },
-  "engines": {
-    "node": ">=18.16.0"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/verful/notifications.git"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/package"
@@ -105,12 +106,12 @@
       "path": "cz-conventional-changelog"
     }
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "np": {
     "contents": ".",
     "anyBranch": false
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
   },
   "tsup": {
     "entry": [

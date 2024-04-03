@@ -17,7 +17,7 @@ function HasDatabaseNotifications(notificationsTable: string): HasDatabaseNotifi
   return (superclass) => {
     class EntityWithNotification extends superclass implements HasDatabaseNotificationsModel {
       @column({ isPrimary: true })
-      public id: any
+      id: any
 
       @hasMany(() => DatabaseNotification, {
         localKey: 'id',
@@ -25,25 +25,25 @@ function HasDatabaseNotifications(notificationsTable: string): HasDatabaseNotifi
       })
       declare notifications: HasMany<DatabaseNotificationModel>
 
-      public async readNotifications(this: HasDatabaseNotificationsModel) {
+      async readNotifications(this: HasDatabaseNotificationsModel) {
         return this.related('notifications')
           .query()
           .whereNotNull('readAt')
           .orderBy('createdAt', 'desc')
       }
 
-      public async unreadNotifications(this: HasDatabaseNotificationsModel) {
+      async unreadNotifications(this: HasDatabaseNotificationsModel) {
         return this.related('notifications')
           .query()
           .whereNull('readAt')
           .orderBy('createdAt', 'desc')
       }
 
-      public async markNotificationsAsRead(this: HasDatabaseNotificationsModel) {
+      async markNotificationsAsRead(this: HasDatabaseNotificationsModel) {
         await this.related('notifications').query().update({ readAt: DateTime.now().toSQL() })
       }
 
-      public async markNotificationsAsUnread(this: HasDatabaseNotificationsModel) {
+      async markNotificationsAsUnread(this: HasDatabaseNotificationsModel) {
         await this.related('notifications').query().update({ readAt: null })
       }
     }

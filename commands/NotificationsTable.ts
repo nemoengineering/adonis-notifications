@@ -1,21 +1,21 @@
-import { join } from 'path'
+import { join } from 'node:path'
 import { BaseCommand } from '@adonisjs/core/build/standalone'
 
 export default class NotificationsTable extends BaseCommand {
-  public static commandName = 'notifications:table'
-  public static description = 'Create the notifications table'
+  static commandName = 'notifications:table'
+  static description = 'Create the notifications table'
 
   /**
    * This command loads the application
    */
-  public static settings = {
+  static settings = {
     loadApp: true,
   }
 
   /**
    * Execute command
    */
-  public async run(): Promise<void> {
+  async run(): Promise<void> {
     const stub = join(__dirname, '..', 'templates', 'migration.txt')
 
     const name = await this.prompt.ask('Enter the notifications table name', {

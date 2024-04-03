@@ -28,7 +28,7 @@ export class NotificationManager<
     this.#emitter = emitter
   }
 
-  public async send(
+  async send(
     notifiables: NotifiableModel | NotifiableModel[],
     notification: NotificationContract,
     deferred?: boolean
@@ -72,7 +72,7 @@ export class NotificationManager<
     return responses
   }
 
-  public async sendLater(
+  async sendLater(
     notifiables: NotifiableModel | NotifiableModel[],
     notification: NotificationContract
   ) {

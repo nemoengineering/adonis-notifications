@@ -1,27 +1,27 @@
-import { join } from 'path'
+import { join } from 'node:path'
 import { BaseCommand, args } from '@adonisjs/core/build/standalone'
 
 export default class MakeNotification extends BaseCommand {
-  public static commandName = 'make:notification'
-  public static description = 'Make a new Notification'
+  static commandName = 'make:notification'
+  static description = 'Make a new Notification'
 
   /**
    * The name of the seeder file.
    */
   @args.string({ description: 'Name of the notification class' })
-  public name: string
+  name: string
 
   /**
    * This command loads the application
    */
-  public static settings = {
+  static settings = {
     loadApp: true,
   }
 
   /**
    * Execute command
    */
-  public async run(): Promise<void> {
+  async run(): Promise<void> {
     const stub = join(__dirname, '..', 'templates', 'notification.txt')
 
     this.generator

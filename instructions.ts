@@ -1,7 +1,7 @@
 import * as sinkStatic from '@adonisjs/sink'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import pluralize from 'pluralize'
-import { join } from 'path'
+import { join } from 'node:path'
 
 type InstructionsState = {
   notificationsTableName: string

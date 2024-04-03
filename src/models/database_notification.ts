@@ -7,7 +7,7 @@ import { LucidModel } from '@adonisjs/lucid/types/model'
 export default function createNotificationModel(tableName: string): DatabaseNotificationModel {
   @StaticImplements<DatabaseNotificationModel>()
   class DatabaseNotification extends (BaseModel as LucidModel) implements DatabaseNotificationRow {
-    public static table = tableName
+    static table = tableName
 
     @column({ isPrimary: true })
     declare id: number
@@ -22,19 +22,19 @@ export default function createNotificationModel(tableName: string): DatabaseNoti
     @column()
     declare notifiableId: number
 
-    public async markAsRead(this: DatabaseNotificationRow) {
+    async markAsRead(this: DatabaseNotificationRow) {
       await this.merge({ readAt: DateTime.now() }).save()
     }
 
-    public async markAsUnread(this: DatabaseNotificationRow) {
+    async markAsUnread(this: DatabaseNotificationRow) {
       await this.merge({ readAt: null }).save()
     }
 
-    public get read() {
+    get read() {
       return Boolean(this.readAt)
     }
 
-    public get unread() {
+    get unread() {
       return !this.readAt
     }
 

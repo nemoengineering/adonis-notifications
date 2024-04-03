@@ -3,7 +3,7 @@ import { NotifiableModel, NotificationChannelContract, TrapCallback } from '../t
 class FakeChannel implements NotificationChannelContract {
   constructor(private listener: TrapCallback) {}
 
-  public async send(data: Record<string, any>, to: NotifiableModel) {
+  async send(data: Record<string, any>, to: NotifiableModel) {
     await this.listener(data, to)
   }
 }

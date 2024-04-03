@@ -5,7 +5,7 @@ import { specReporter } from '@japa/spec-reporter'
 import { processCliArgs, configure, run, TestContext } from '@japa/runner'
 import { Application } from '@adonisjs/core/build/standalone'
 import { Filesystem } from '@poppinss/dev-utils'
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 
 import {
   createAppConfig,
@@ -92,7 +92,7 @@ TestContext.macro(
 TestContext.macro('getMailer', async (subject = 'Test', target = 'test@example.com') => {
   const { BaseMailer } = await import('@ioc:Adonis/Addons/Mail')
   return new (class extends BaseMailer {
-    public prepare(message: MessageContract) {
+    prepare(message: MessageContract) {
       return message.subject(subject).from('test@test.com').to(target)
     }
   })()

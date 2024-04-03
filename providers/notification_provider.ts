@@ -17,7 +17,7 @@ declare module '@adonisjs/core/types' {
 export default class NotificationProvider {
   constructor(protected app: ApplicationService) {}
 
-  public register() {
+  register() {
     this.app.container.singleton('notification.manager', async (resolver) => {
       const emitter = await resolver.make('emitter')
       const notificationConfigProvider = await this.app.config.get('notification')

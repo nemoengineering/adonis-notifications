@@ -9,7 +9,7 @@ export default async function notifiableFactory(
 ): Promise<NotifiableModel> {
   class User extends compose(BaseModel, Notifiable(tableName)) {
     @column({ isPrimary: true })
-    public id: number
+    id: number
   }
 
   return persisted ? User.create({}) : new User()
