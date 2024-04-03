@@ -1,5 +1,5 @@
-import { NotificationContract, RoutesNotificationsMixin } from '@ioc:Verful/Notification'
-import Application from '@adonisjs/core/build/services/app.js'
+import { NotificationContract, RoutesNotificationsMixin } from "../types.js";
+import app from "@adonisjs/core/services/app";
 
 /**
  * This mixin is used to add the hability to notify a model using any channel, except database
@@ -7,12 +7,14 @@ import Application from '@adonisjs/core/build/services/app.js'
 const RoutesNotifications: RoutesNotificationsMixin = (superclass) => {
   return class extends superclass {
     public async notify(notification: NotificationContract) {
-      const Notification = Application.container.use('Verful/Notification')
+      const Notification = await app.container.make("notification.manager")
+      // @ts-expect-error
       await Notification.send(this, notification)
     }
 
     public async notifyLater(notification: NotificationContract) {
-      const Notification = Application.container.use('Verful/Notification')
+      const Notification = await app.container.make("notification.manager")
+      // @ts-expect-error
       await Notification.sendLater(this, notification)
     }
   }

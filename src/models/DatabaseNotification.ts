@@ -1,11 +1,11 @@
 import { DateTime } from 'luxon'
-import Application from '@adonisjs/core/build/services/app.js'
+import { DatabaseNotificationModel, DatabaseNotificationRow } from "../types.js";
+import StaticImplements from "../helpers/StaticImplements.js";
+import { BaseModel, column } from "@adonisjs/lucid/orm";
+import { LucidModel } from "@adonisjs/lucid/types/model";
 
-import { DatabaseNotificationModel, DatabaseNotificationRow } from '@ioc:Verful/Notification'
-import StaticImplements from '../Helpers/StaticImplements'
-import type { LucidModel } from '@ioc:Adonis/Lucid/Orm'
 
-const { column, BaseModel } = Application.container.use('Adonis/Lucid/Orm')
+
 
 export default function createNotificationModel(tableName: string): DatabaseNotificationModel {
   @StaticImplements<DatabaseNotificationModel>()
@@ -13,17 +13,17 @@ export default function createNotificationModel(tableName: string): DatabaseNoti
     public static table = tableName
 
     @column({ isPrimary: true })
-    public id: number
+    declare id: number
 
     @column({
       prepare: (value: Record<string, any>) => JSON.stringify(value),
       consume: (value: string | Record<string, any>) =>
         typeof value === 'string' ? JSON.parse(value) : value,
     })
-    public data: Record<string, any>
+    declare data: Record<string, any>
 
     @column()
-    public notifiableId: number
+    declare notifiableId: number
 
     public async markAsRead(this: DatabaseNotificationRow) {
       await this.merge({ readAt: DateTime.now() }).save()
@@ -42,13 +42,13 @@ export default function createNotificationModel(tableName: string): DatabaseNoti
     }
 
     @column.dateTime({ autoCreate: false, autoUpdate: false })
-    public readAt: DateTime | null
+    declare readAt: DateTime | null
 
     @column.dateTime({ autoCreate: true })
-    public createdAt: DateTime
+    declare createdAt: DateTime
 
     @column.dateTime({ autoCreate: true, autoUpdate: true })
-    public updatedAt: DateTime
+    declare updatedAt: DateTime
   }
 
   return DatabaseNotification

@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import { createNotificationsTable, createUsersTable } from '../../bin/test/database'
-import DatabaseChannel from '../../src/Channels/Database'
+import DatabaseChannel from '../../src/channels/database.js'
 
 test.group('DatabaseChannel', (group) => {
   group.each.setup(async () => {

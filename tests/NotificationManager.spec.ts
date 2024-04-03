@@ -3,9 +3,9 @@ import { LucidModel } from '@ioc:Adonis/Lucid/Orm'
 import Event from '@ioc:Adonis/Core/Event'
 import { test } from '@japa/runner'
 import { createNotificationsTable, createUsersTable } from '../bin/test/database'
-import DatabaseChannel from '../src/Channels/Database'
-import MailChannel from '../src/Channels/Mail'
-import NotificationManager from '../src/Notification'
+import DatabaseChannel from '../src/channels/database.js'
+import MailChannel from '../src/channels/mail.js'
+import NotificationManager from '../src/notification.ts.bak'
 
 test.group('NotificationManager', (group) => {
   group.each.setup(async () => {

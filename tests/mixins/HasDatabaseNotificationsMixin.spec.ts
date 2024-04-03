@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import HasDatabaseNotifications from '../../src/Mixins/HasDatabaseNotifications'
+import HasDatabaseNotifications from '../../src/mixins/has_database_notifications'
 import { createNotificationsTable, createUsersTable } from '../../bin/test/database'
 import { createNotification } from '../../bin/test/helpers'
 import { DateTime } from 'luxon'

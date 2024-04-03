@@ -1,8 +1,4 @@
-import type {
-  NotifiableModel,
-  NotificationChannelContract,
-  TrapCallback,
-} from '@ioc:Verful/Notification'
+import { NotifiableModel, NotificationChannelContract, TrapCallback } from "../types.js";
 
 class FakeChannel implements NotificationChannelContract {
   constructor(private listener: TrapCallback) {}

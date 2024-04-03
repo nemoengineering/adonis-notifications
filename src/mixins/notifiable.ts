@@ -1,8 +1,8 @@
-import { NotifiableMixin } from '@ioc:Verful/Notification'
-import { compose } from '@poppinss/utils/build/helpers'
 
-import HasDatabaseNotifications from './HasDatabaseNotifications'
-import RoutesNotifications from './RoutesNotifications'
+import RoutesNotifications from './routes_notifications.js'
+import { NotifiableMixin } from "../types.js";
+import { compose } from "@poppinss/utils";
+import HasDatabaseNotifications from "./has_database_notifications.js";
 
 /**
  * This trait is used to add the hability to notify a model using any channel

@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import RoutesNotifications from '../../src/Mixins/RoutesNotifications'
+import RoutesNotifications from '../../src/mixins/routes_notifications'
 import Notification from '@ioc:Verful/Notification'
 
 test.group('RoutesNotificationsMixin', (group) => {

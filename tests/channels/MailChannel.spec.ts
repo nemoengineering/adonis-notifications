@@ -1,6 +1,6 @@
 import Mail from '@ioc:Adonis/Addons/Mail'
 import { test } from '@japa/runner'
-import MailChannel from '../../src/Channels/Mail'
+import MailChannel from '../../src/channels/mail.js'
 
 test.group('MailChannel', () => {
   test('MailChannel.send', async ({ getMailer, getNotifiable, expect }) => {

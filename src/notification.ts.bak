@@ -131,7 +131,7 @@ export default class Notification
   }
 
   public trap(callback: TrapCallback) {
-    const FakeChannel = require('./Channels/Fake').default
+    const FakeChannel = require('./channels/fake.js').default
     this.fakeChannel = new FakeChannel(callback)
   }
 
@@ -151,12 +151,12 @@ export default class Notification
   }
 
   protected createDatabase(_mappingName: string, config: DatabaseChannelConfig) {
-    const DatabaseChannel = require('./Channels/Database').default
+    const DatabaseChannel = require('./channels/database.js').default
     return new DatabaseChannel(config)
   }
 
   protected createMail(_mappingName: string, config: MailChannelConfig) {
-    const MailChannel = require('./Channels/Mail').default
+    const MailChannel = require('./channels/mail.js').default
     return new MailChannel(config)
   }
 
