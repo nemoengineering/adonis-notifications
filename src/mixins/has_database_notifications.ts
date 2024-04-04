@@ -15,7 +15,7 @@ function HasDatabaseNotifications(notificationsTable: string): HasDatabaseNotifi
   const DatabaseNotification = createNotificationModel(notificationsTable)
 
   return (superclass) => {
-    class EntityWithNotification extends superclass implements HasDatabaseNotificationsModel {
+    class NotifiableWithDatabase extends superclass implements HasDatabaseNotificationsModel {
       @column({ isPrimary: true })
       id: any
 
@@ -48,7 +48,7 @@ function HasDatabaseNotifications(notificationsTable: string): HasDatabaseNotifi
       }
     }
 
-    return EntityWithNotification
+    return NotifiableWithDatabase
   }
 }
 

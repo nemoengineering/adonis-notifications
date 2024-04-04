@@ -29,15 +29,7 @@ export default class NotificationProvider {
         )
       }
 
-      return new NotificationManager(emitter, config)
+      return new NotificationManager(emitter, config) as NotificationService
     })
-
-    /*    this.app.container.singleton('notification.mixins', async () => {
-      return {
-        Notifiable: require('../src/mixins/notifiable').default,
-        RoutesNotifications: require('../src/mixins/routesNotifications').default,
-        HasDatabaseNotifications: require('../src/mixins/has_database_notifications').default,
-      }
-    })*/
   }
 }

@@ -5,16 +5,17 @@ import {
 } from './types.js'
 import { ConfigProvider } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
-import { DatabaseChannel } from './channels/database.js'
+import type { DatabaseChannel } from './channels/database.js'
 
-type ResolvedConfig<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
-  NotificationConfig & {
-    channels: {
-      [K in keyof KnownChannels]: KnownChannels[K] extends ConfigProvider<infer A>
-        ? A
-        : KnownChannels[K]
-    }
+export type ResolvedConfig<
+  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
+> = NotificationConfig & {
+  channels: {
+    [K in keyof KnownChannels]: KnownChannels[K] extends ConfigProvider<infer A>
+      ? A
+      : KnownChannels[K]
   }
+}
 
 export function defineConfig<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,

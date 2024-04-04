@@ -6,6 +6,18 @@ import { ConfigProvider } from '@adonisjs/core/types'
 import { NormalizeConstructor } from '@adonisjs/core/types/helpers'
 import { NotificationManager } from './notification_manager.js'
 
+export type NotificationConfig = {}
+
+export type TrapCallback = (notification: any, notifiable: any) => any
+
+export type QueueMonitorCallback = (
+  error?: Error & { notification: MessageType },
+  response?: {
+    message: MessageType
+    response: ResponseType
+  }
+) => void
+
 export interface NotificationChannelContract {
   send(notification: any, notifiable: NotifiableType, ...extras: any[]): Promise<any>
 }
@@ -13,27 +25,33 @@ export interface NotificationChannelContract {
 export type NotificationManagerChannelFactory = () => NotificationChannelContract
 
 export type NotificationEvents = {
-  'notification:sent': {}
+  'notification:sent': {
+    notification: MessageType
+    notifiable: NotifiableType
+    channel: NotificationChannelName
+  }
 }
 
-export type NotificationConfig = {}
+/*type ChannelParams = Parameters<
+  ReturnType<NotificationChannels[keyof NotificationChannels]>['send']
+>*/
 
-type ChannelParams = Parameters<
-  NotificationChannelsList[keyof NotificationChannelsList]['implementation']['send']
->
+export interface ChannelParams extends Record<string, any> {}
 
-export type MessageType = ChannelParams[0]
+export type MessageType = ChannelParams['type'][0]
 
-export type NotifiableType = ChannelParams[1]
+export type NotifiableType = ChannelParams['type'][1]
 
 export type ResponseType = Awaited<
-  ReturnType<NotificationChannelsList[keyof NotificationChannelsList]['implementation']['send']>
+  ReturnType<ReturnType<NotificationChannels[keyof NotificationChannels]>['send']>
 >
 
-type NotificationContractChannels = {
-  [Key in keyof NotificationChannelsList as `to${Capitalize<Key>}`]?: (
+type NotificationContractChannels<
+  Channels extends Record<string, NotificationManagerChannelFactory>,
+> = {
+  [Key in keyof Channels as `to${Capitalize<string & Key>}`]?: (
     notifiable: NotifiableModel
-  ) => Parameters<NotificationChannelsList[Key]['implementation']['send']>[0]
+  ) => Parameters<ReturnType<Channels[Key]>['send']>[0]
 }
 
 /**
@@ -41,10 +59,8 @@ type NotificationContractChannels = {
  * a optional toChannel method that returns the needed payload to send a
  * message with the channel.
  */
-export interface NotificationContract extends NotificationContractChannels {
-  via(
-    notifiable: NotifiableModel
-  ): keyof NotificationChannelsList | Array<keyof NotificationChannelsList>
+export interface NotificationContract extends NotificationContractChannels<NotificationChannels> {
+  via(notifiable: NotifiableModel): NotificationChannelName | Array<NotificationChannelName>
 }
 
 export interface DatabaseNotificationModel extends Omit<LucidModel, 'new'> {
@@ -125,31 +141,21 @@ export interface MailChannelContract {
  * MUST BE SET IN THE USER LAND.
  * --------------------------------------------------------
  */
-export interface NotificationChannelsList {}
+export interface NotificationChannels extends Record<string, NotificationManagerChannelFactory> {}
+
+export type NotificationChannelName = keyof NotificationChannels
 
 export type InferChannels<
   T extends ConfigProvider<{ channels: Record<string, NotificationManagerChannelFactory> }>,
 > = Awaited<ReturnType<T['resolver']>>['channels']
 
-export interface NotificationService
-  extends NotificationManager<
-    NotificationChannelsList extends Record<string, NotificationManagerChannelFactory>
-      ? NotificationChannelsList
-      : never
-  > {}
-
-export type NotificationEventData = {
-  notification: MessageType
-  notifiable: NotifiableType
-  channel: keyof NotificationChannelsList
+export type InferChannelParams<T extends ConfigProvider<{ channels: Record<string, any> }>> = {
+  type: Parameters<ReturnType<InferChannels<T>[keyof InferChannels<T>]>['send']>
 }
 
-export type TrapCallback = (notification: MessageType, notifiable: NotifiableType) => any
-
-export type QueueMonitorCallback = (
-  error?: Error & { notification: MessageType },
-  response?: {
-    message: MessageType
-    response: ResponseType
-  }
-) => void
+export interface NotificationService
+  extends NotificationManager<
+    NotificationChannels extends Record<string, NotificationManagerChannelFactory>
+      ? NotificationChannels
+      : never
+  > {}

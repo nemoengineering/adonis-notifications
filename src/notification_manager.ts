@@ -37,7 +37,7 @@ export class NotificationManager<
 
     const notifications = notifiables
       .map((notifiable) => {
-        const channels = [notification.via(notifiable)].flat()
+        const channels = [notification.via(notifiable) as string | string[]].flat()
         return channels.map((channel) => {
           const method = `to${string.capitalCase(channel)}` as `to${Capitalize<typeof channel>}`
 

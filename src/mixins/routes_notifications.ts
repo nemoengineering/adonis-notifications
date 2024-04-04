@@ -5,7 +5,7 @@ import app from '@adonisjs/core/services/app'
  * This mixin is used to add the hability to notify a model using any channel, except database
  */
 const RoutesNotifications: RoutesNotificationsMixin = (superclass) => {
-  return class extends superclass {
+  class NotifiableWithNotification extends superclass {
     async notify(notification: NotificationContract) {
       const Notification = await app.container.make('notification.manager')
       await Notification.send(this, notification)
@@ -16,6 +16,8 @@ const RoutesNotifications: RoutesNotificationsMixin = (superclass) => {
       await Notification.sendLater(this, notification)
     }
   }
+
+  return NotifiableWithNotification
 }
 
 export default RoutesNotifications
