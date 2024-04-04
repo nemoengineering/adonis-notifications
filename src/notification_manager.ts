@@ -28,9 +28,9 @@ export class NotificationManager<
     this.#emitter = emitter
   }
 
-  async send(
-    notifiables: NotifiableModel | NotifiableModel[],
-    notification: NotificationContract,
+  async send<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
+    notification: NotificationContract<Model>,
     deferred?: boolean
   ): Promise<void | ResponseType[]> {
     notifiables = Array.isArray(notifiables) ? notifiables : [notifiables]
@@ -72,9 +72,9 @@ export class NotificationManager<
     return responses
   }
 
-  async sendLater(
-    notifiables: NotifiableModel | NotifiableModel[],
-    notification: NotificationContract
+  async sendLater<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
+    notification: NotificationContract<Model>
   ) {
     this.send(notifiables, notification, true)
   }

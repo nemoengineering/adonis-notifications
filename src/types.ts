@@ -48,9 +48,10 @@ export type ResponseType = Awaited<
 
 type NotificationContractChannels<
   Channels extends Record<string, NotificationManagerChannelFactory>,
+  Model extends NotifiableModel,
 > = {
-  [Key in keyof Channels as `to${Capitalize<string & Key>}`]?: (
-    notifiable: NotifiableModel
+  [Key in keyof Channels as Key extends string ? `to${Capitalize<Key>}` : never]?: (
+    notifiable: Model
   ) => Parameters<ReturnType<Channels[Key]>['send']>[0]
 }
 
@@ -59,8 +60,9 @@ type NotificationContractChannels<
  * a optional toChannel method that returns the needed payload to send a
  * message with the channel.
  */
-export interface NotificationContract extends NotificationContractChannels<NotificationChannels> {
-  via(notifiable: NotifiableModel): NotificationChannelName | Array<NotificationChannelName>
+export interface NotificationContract<Model extends NotifiableModel>
+  extends NotificationContractChannels<NotificationChannels, Model> {
+  via(notifiable: Model): NotificationChannelName | Array<NotificationChannelName>
 }
 
 export interface DatabaseNotificationModel extends Omit<LucidModel, 'new'> {
@@ -81,8 +83,8 @@ export interface DatabaseNotificationRow extends LucidRow {
 }
 
 export interface RoutesNotificationsModel extends LucidRow {
-  notify(this: this, notification: NotificationContract): Promise<void>
-  notifyLater(this: this, notification: NotificationContract): Promise<void>
+  notify(this: this, notification: NotificationContract<NotifiableModel>): Promise<void>
+  notifyLater(this: this, notification: NotificationContract<NotifiableModel>): Promise<void>
 }
 
 export interface RoutesNotificationsMixin {
@@ -141,7 +143,7 @@ export interface MailChannelContract {
  * MUST BE SET IN THE USER LAND.
  * --------------------------------------------------------
  */
-export interface NotificationChannels extends Record<string, NotificationManagerChannelFactory> {}
+export interface NotificationChannels extends Record<string, never> {}
 
 export type NotificationChannelName = keyof NotificationChannels
 
