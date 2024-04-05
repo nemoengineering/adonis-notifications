@@ -10,41 +10,46 @@ export type NotificationConfig = {}
 
 export type TrapCallback = (notification: any, notifiable: any) => any
 
-export type QueueMonitorCallback = (
+/*export type QueueMonitorCallback = (
   error?: Error & { notification: MessageType },
   response?: {
     message: MessageType
     response: ResponseType
   }
-) => void
+) => void*/
 
 export interface NotificationChannelContract {
-  send(notification: any, notifiable: NotifiableType, ...extras: any[]): Promise<any>
+  send(notification: any, notifiable: NotifiableModel, ...extras: any[]): Promise<any>
 }
 
 export type NotificationManagerChannelFactory = () => NotificationChannelContract
 
-export type NotificationEvents = {
-  'notification:sent': {
-    notification: MessageType
-    notifiable: NotifiableType
-    channel: NotificationChannelName
-  }
+export type NotificationEvents<
+  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
+> = {
+  'notification:sent': Event<KnownChannels>
 }
 
-/*type ChannelParams = Parameters<
-  ReturnType<NotificationChannels[keyof NotificationChannels]>['send']
->*/
+type Event<KnownChannels extends Record<string, NotificationManagerChannelFactory>> = {
+  [Channel in keyof KnownChannels]: {
+    notification: Parameters<ReturnType<KnownChannels[Channel]>['send']>[0]
+    notifiable: Parameters<ReturnType<KnownChannels[Channel]>['send']>[1]
+    channel: Channel
+  }
+}[keyof KnownChannels]
 
-export interface ChannelParams extends Record<string, any> {}
+type ChannelParams<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
+  Parameters<ReturnType<KnownChannels[keyof KnownChannels]>['send']>
 
-export type MessageType = ChannelParams['type'][0]
+export type MessageType<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
+  ChannelParams<KnownChannels>[0]
 
-export type NotifiableType = ChannelParams['type'][1]
+export type NotifiableType<
+  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
+> = ChannelParams<KnownChannels>[1]
 
-export type ResponseType = Awaited<
-  ReturnType<ReturnType<NotificationChannels[keyof NotificationChannels]>['send']>
->
+export type ResponseType<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
+  Awaited<ReturnType<ReturnType<KnownChannels[keyof KnownChannels]>['send']>>
 
 type NotificationContractChannels<
   Channels extends Record<string, NotificationManagerChannelFactory>,
@@ -61,6 +66,7 @@ type NotificationContractChannels<
  * message with the channel.
  */
 export interface NotificationContract<Model extends NotifiableModel>
+  // @ts-expect-error ignoring since NotificationChannels does not have any keys until set in user land
   extends NotificationContractChannels<NotificationChannels, Model> {
   via(notifiable: Model): NotificationChannelName | Array<NotificationChannelName>
 }
@@ -71,8 +77,8 @@ export interface DatabaseNotificationModel extends Omit<LucidModel, 'new'> {
 
 export interface DatabaseNotificationRow extends LucidRow {
   id: number
-  data: Record<string, any>
-  notifiableId: number
+  data: DatabaseChannelData
+  notifiableId: any
   markAsRead(): Promise<void>
   markAsUnread(): Promise<void>
   read: boolean
@@ -83,8 +89,8 @@ export interface DatabaseNotificationRow extends LucidRow {
 }
 
 export interface RoutesNotificationsModel extends LucidRow {
-  notify(this: this, notification: NotificationContract<NotifiableModel>): Promise<void>
-  notifyLater(this: this, notification: NotificationContract<NotifiableModel>): Promise<void>
+  notify(this: this, notification: NotificationContract<this>): Promise<void>
+  notifyLater(this: this, notification: NotificationContract<this>): Promise<void>
 }
 
 export interface RoutesNotificationsMixin {
@@ -111,13 +117,13 @@ export interface HasDatabaseNotificationsMixin {
   }
 }
 
-export interface NotifiableModel extends RoutesNotificationsModel, HasDatabaseNotificationsModel {}
+export interface NotifiableModel extends RoutesNotificationsModel {}
 
 export interface NotifiableMixin {
   <T extends NormalizeConstructor<LucidModel>>(
     superclass: T
   ): T & {
-    new (...args: any[]): LucidRow & NotifiableModel
+    new (...args: any[]): LucidRow & NotifiableModel & HasDatabaseNotificationsModel
   }
 }
 
@@ -125,8 +131,10 @@ export interface MailChannelConfig {}
 
 export interface DatabaseChannelConfig {}
 
+export interface DatabaseChannelData extends Record<string, any> {}
+
 export interface DatabaseChannelContract {
-  send(notification: Record<string, any>, notifiable: HasDatabaseNotificationsModel): Promise<void>
+  send(notification: DatabaseChannelData, notifiable: HasDatabaseNotificationsModel): Promise<void>
 }
 
 export interface MailChannelContract {
@@ -143,17 +151,14 @@ export interface MailChannelContract {
  * MUST BE SET IN THE USER LAND.
  * --------------------------------------------------------
  */
-export interface NotificationChannels extends Record<string, never> {}
+
+export interface NotificationChannels {}
 
 export type NotificationChannelName = keyof NotificationChannels
 
 export type InferChannels<
   T extends ConfigProvider<{ channels: Record<string, NotificationManagerChannelFactory> }>,
 > = Awaited<ReturnType<T['resolver']>>['channels']
-
-export type InferChannelParams<T extends ConfigProvider<{ channels: Record<string, any> }>> = {
-  type: Parameters<ReturnType<InferChannels<T>[keyof InferChannels<T>]>['send']>
-}
 
 export interface NotificationService
   extends NotificationManager<

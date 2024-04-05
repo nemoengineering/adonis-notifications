@@ -1,5 +1,10 @@
 import type { ApplicationService } from '@adonisjs/core/types'
-import { NotificationEvents, NotificationService } from '../src/types.js'
+import {
+  NotificationChannels,
+  NotificationEvents,
+  NotificationManagerChannelFactory,
+  NotificationService,
+} from '../src/types.js'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
 import { NotificationManager } from '../src/notification_manager.js'
@@ -11,7 +16,12 @@ declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
     'notification.manager': NotificationService
   }
-  export interface EventsList extends NotificationEvents {}
+  export interface EventsList
+    extends NotificationEvents<
+      NotificationChannels extends Record<string, NotificationManagerChannelFactory>
+        ? NotificationChannels
+        : {}
+    > {}
 }
 
 export default class NotificationProvider {

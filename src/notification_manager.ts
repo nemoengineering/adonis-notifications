@@ -14,12 +14,12 @@ import string from '@poppinss/utils/string'
 export class NotificationManager<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,
 > {
-  #emitter: EmitterLike<NotificationEvents>
+  #emitter: EmitterLike<NotificationEvents<KnownChannels>>
 
   #fakeChannel?: NotificationChannelContract
 
   constructor(
-    emitter: EmitterLike<NotificationEvents>,
+    emitter: EmitterLike<NotificationEvents<KnownChannels>>,
     public config: NotificationConfig & {
       channels: KnownChannels
     }
@@ -31,13 +31,13 @@ export class NotificationManager<
   async send<Model extends NotifiableModel>(
     notifiables: Model | Model[],
     notification: NotificationContract<Model>,
-    deferred?: boolean
-  ): Promise<void | ResponseType[]> {
+    _deferred?: boolean
+  ): Promise<void | ResponseType<KnownChannels>[]> {
     notifiables = Array.isArray(notifiables) ? notifiables : [notifiables]
 
     const notifications = notifiables
       .map((notifiable) => {
-        const channels = [notification.via(notifiable) as string | string[]].flat()
+        const channels = [notification.via(notifiable)].flat()
         return channels.map((channel) => {
           const method = `to${string.capitalCase(channel)}` as `to${Capitalize<typeof channel>}`
 
@@ -45,13 +45,14 @@ export class NotificationManager<
             throw new Error(`Method ${method} not found on ${notification.constructor.name}`)
           }
 
-          const message = notification[method]!(notifiable)
+          // @ts-expect-error ignoring since NotificationChannels does not have any keys until set in user land
+          const message = notification[method](notifiable)
           return { channel, message, notifiable }
         })
       })
       .flat()
 
-    const responses: ResponseType[] = []
+    const responses: ResponseType<KnownChannels>[] = []
 
     for (const { channel, message, notifiable } of notifications) {
       if (this.#fakeChannel) {
