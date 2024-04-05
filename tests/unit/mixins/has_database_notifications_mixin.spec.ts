@@ -1,20 +1,14 @@
 import { test } from '@japa/runner'
-import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import HasDatabaseNotifications from '../../src/mixins/has_database_notifications'
-import { createNotificationsTable, createUsersTable } from '../../bin/test/database'
-import { createNotification } from '../../bin/test/helpers'
+import HasDatabaseNotifications from '../../../src/mixins/has_database_notifications.js'
+import { createNotification } from '../../../bin/test/helpers.js'
 import { DateTime } from 'luxon'
-import Database from '@ioc:Adonis/Lucid/Database'
+import { createDatabase, createTables } from '../../helpers.js'
+import { BaseModel } from '@adonisjs/lucid/orm'
 
 test.group('HasDatabaseNotificationsMixin', (group) => {
-  group.each.setup(async () => {
-    await createUsersTable()
-    await createNotificationsTable()
-  })
-
-  group.each.teardown(async () => {
-    await Database.connection().truncate('notifications')
-    await Database.connection().truncate('users')
+  group.each.setup(async (t) => {
+    const db = await createDatabase(t)
+    await createTables(db, t)
   })
 
   test('Mixin gets applied succesfuly', ({ expect }) => {

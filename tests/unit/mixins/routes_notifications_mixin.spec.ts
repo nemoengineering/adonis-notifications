@@ -1,7 +1,6 @@
 import { test } from '@japa/runner'
-import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import RoutesNotifications from '../../src/mixins/routes_notifications'
-import Notification from '@ioc:Verful/Notification'
+import RoutesNotifications from '../../../src/mixins/routes_notifications.js'
+import { BaseModel } from '@adonisjs/lucid/orm'
 
 test.group('RoutesNotificationsMixin', (group) => {
   group.each.teardown(() => {

@@ -98,8 +98,8 @@ TestContext.macro('getMailer', async (subject = 'Test', target = 'test@example.c
   })()
 })
 TestContext.macro('getNotifiable', async (tableName = 'notifications', persisted = true) => {
-  const { default: notifiableFactory } = await import('./notifiableFactory')
-  return notifiableFactory(tableName, persisted)
+  const { notifiable_factory: notifiableFactory } = await import('./notifiable_factory')
+  return notifiable_factory(tableName, persisted)
 })
 /*
 |--------------------------------------------------------------------------

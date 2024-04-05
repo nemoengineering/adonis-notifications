@@ -1,31 +1,62 @@
 import { assert } from '@japa/assert'
-import { processCLIArgs, configure, run } from '@japa/runner'
+import { snapshot } from '@japa/snapshot'
+import { fileSystem } from '@japa/file-system'
+import { expectTypeOf } from '@japa/expect-type'
+import { configure, processCLIArgs, run } from '@japa/runner'
+import { Expect, expect } from '@japa/expect'
+import { TestContext } from '@japa/runner/core'
+import { NotifiableModel } from '../src/types.js'
+import { NotificationChannelsList, NotificationContract } from '@ioc:Verful/Notification'
+import { BaseMailer } from '@ioc:Adonis/Addons/Mail'
 
-/*
-|--------------------------------------------------------------------------
-| Configure tests
-|--------------------------------------------------------------------------
-|
-| The configure method accepts the configuration to configure the Japa
-| tests runner.
-|
-| The first method call "processCLIArgs" process the command line arguments
-| and turns them into a config object. Using this method is not mandatory.
-|
-| Please consult japa.dev/runner-config for the config docs.
-*/
-processCLIArgs(process.argv.slice(2))
+processCLIArgs(process.argv.splice(2))
 configure({
-  files: ['tests/**/*.spec.ts'],
-  plugins: [assert()],
+  suites: [
+    {
+      name: 'unit',
+      files: ['tests/unit/**/*.spec.ts'],
+    },
+  ],
+  plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
 
-/*
-|--------------------------------------------------------------------------
-| Run tests
-|--------------------------------------------------------------------------
-|
-| The following "run" method is required to execute all the tests.
-|
-*/
+TestContext.macro('getNotifiable', async (tableName = 'notifications', persisted = true) => {
+  const { default: notifiableFactory } = await import('./test/notifiable_factory.js')
+  return notifiableFactory(tableName, persisted)
+})
+
+//TestContext.getter('app', () => require('@ioc:Adonis/Core/Application'))
+
+TestContext.macro(
+  'getNotification',
+  (
+    channels = ['database'],
+    toDatabase = {
+      title: 'test',
+    }
+  ): NotificationContract => ({
+    via() {
+      return channels
+    },
+    toDatabase() {
+      return toDatabase
+    },
+  })
+)
+
+declare module '@japa/runner/core' {
+  interface TestContext {
+    getNotifiable(
+      tableName?: string,
+      persisted?: boolean
+    ): Promise<NotifiableModel & { id: number }>
+
+    getNotification(
+      channels?: (keyof NotificationChannelsList)[],
+      toDatabase?: Record<string, any>,
+      toMail?: InstanceType<typeof BaseMailer>
+    ): NotificationContract
+  }
+}
+
 run()

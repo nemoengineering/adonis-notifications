@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import Notifiable from '../../src/mixins/notifiable'
+import Notifiable from '../../../src/mixins/notifiable.js'
+import { BaseModel } from '@adonisjs/lucid/orm'
 
 const Mixin = Notifiable('notifications')
 

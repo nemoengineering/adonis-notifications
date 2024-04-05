@@ -1,20 +1,14 @@
-import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import { createNotificationsTable, createUsersTable } from '../bin/test/database'
-import createNotificationModel from '../src/models/database_notification'
+import { createDatabase, createTables } from '../helpers.js'
+import createNotificationModel from '../../src/models/database_notification.js'
 
 test.group('DatabaseNotification', async (group) => {
-  group.each.setup(async () => {
-    await createUsersTable()
-    await createNotificationsTable()
+  group.each.setup(async (t) => {
+    const db = await createDatabase(t)
+    await createTables(db, t)
   })
 
-  group.each.teardown(async () => {
-    await Database.connection().truncate('notifications')
-    await Database.connection().truncate('users')
-  })
-
-  test('Model created succesfully', ({ expect }) => {
+  test('Model created succesfully', async ({ expect }) => {
     const Model = createNotificationModel('test')
     expect(Model).toBeDefined()
     expect(Model.table).toBe('test')
@@ -35,6 +29,9 @@ test.group('DatabaseNotification', async (group) => {
   })
 
   test('DatabaseNotification.markAsUnread', async ({ expect, getNotifiable }) => {
+    /* const db = await createDatabase()
+    await createTables(db)*/
+
     const user = await getNotifiable()
     const Model = createNotificationModel('notifications')
 

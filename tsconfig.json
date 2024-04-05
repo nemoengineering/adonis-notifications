@@ -6,5 +6,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["tests", "test-helpers", "bin"]
+  "exclude": [ "test-helpers", "bin/test"]
 }
