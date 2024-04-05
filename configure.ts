@@ -53,6 +53,15 @@ export async function configure(command: Configure) {
     channels,
   })
 
+  // Publish migration
+  await codemods.makeUsingStub(stubsRoot, 'make/migration/notifications.stub', {
+    entity: command.app.generators.createEntity('notifications'),
+    migration: {
+      folder: 'database/migrations',
+      fileName: `${new Date().getTime()}_create_notifications_table.ts`,
+    },
+  })
+
   /**
    * Publish provider and command
    */
