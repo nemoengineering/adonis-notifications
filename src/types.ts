@@ -10,14 +10,6 @@ export type NotificationConfig = {}
 
 export type TrapCallback = (notification: any, notifiable: any) => any
 
-/*export type QueueMonitorCallback = (
-  error?: Error & { notification: MessageType },
-  response?: {
-    message: MessageType
-    response: ResponseType
-  }
-) => void*/
-
 export interface NotificationChannelContract {
   send(notification: any, notifiable: NotifiableModel, ...extras: any[]): Promise<any>
 }

@@ -9,10 +9,13 @@ import {
   NotificationManagerContract,
   Notifier,
   ResponseType,
+  TrapCallback,
 } from './types.js'
 import debug from './debug.js'
 import string from '@poppinss/utils/string'
 import { MemoryQueueNotifier } from './notifiers/memory_queue.js'
+import { RuntimeException } from '@poppinss/utils'
+import FakeChannel from './channels/fake.js'
 
 export class NotificationManager<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,
@@ -24,7 +27,7 @@ export class NotificationManager<
 
   #notifier: Notifier<KnownChannels>
 
-  #fakeChannel?: NotificationChannelContract
+  #fakeChannel?: FakeChannel
 
   constructor(
     emitter: EmitterLike<NotificationEvents<KnownChannels>>,
@@ -110,6 +113,16 @@ export class NotificationManager<
   }
 
   use<K extends keyof KnownChannels>(channelName: K): ReturnType<KnownChannels[K]> {
+    if (!this.config.channels[channelName]) {
+      throw new RuntimeException(
+        `Unknown channel "${String(channelName)}". Make sure it is configured inside the config file`
+      )
+    }
+
+    if (this.#fakeChannel) {
+      return this.#fakeChannel as unknown as ReturnType<KnownChannels[K]>
+    }
+
     const cachedChannel = this.#channelCache[channelName]
     if (cachedChannel) {
       debug('using channel from cache. name: %s', cachedChannel)
@@ -124,5 +137,26 @@ export class NotificationManager<
     this.#channelCache[channelName] = channel
 
     return channel
+  }
+
+  /**
+   * Turn on fake mode. After this all calls to "notification.use" will
+   * return an instance of the fake channel
+   */
+  fake(callback: TrapCallback): FakeChannel {
+    this.restore()
+    debug('creating fake channel')
+    this.#fakeChannel = new FakeChannel(callback)
+    return this.#fakeChannel
+  }
+
+  /**
+   * Turn off fake mode and restore normal behavior
+   */
+  restore() {
+    if (!this.#fakeChannel) return
+
+    this.#fakeChannel = undefined
+    debug('restoring channel fake')
   }
 }
