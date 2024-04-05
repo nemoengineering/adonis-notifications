@@ -27,26 +27,21 @@ export type NotificationManagerChannelFactory = () => NotificationChannelContrac
 export type NotificationEvents<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,
 > = {
-  'notification:sent': Event<KnownChannels>
+  'notification:sent': EventWithChannel<KnownChannels>
+  'notification:queueing': EventWithChannel<KnownChannels>
+  'notification:queued': EventWithChannel<KnownChannels> & { metaData?: any }
+  'notification:queued:error': {
+    error: any
+  }
 }
 
-type Event<KnownChannels extends Record<string, NotificationManagerChannelFactory>> = {
+type EventWithChannel<KnownChannels extends Record<string, NotificationManagerChannelFactory>> = {
   [Channel in keyof KnownChannels]: {
     notification: Parameters<ReturnType<KnownChannels[Channel]>['send']>[0]
     notifiable: Parameters<ReturnType<KnownChannels[Channel]>['send']>[1]
     channel: Channel
   }
 }[keyof KnownChannels]
-
-type ChannelParams<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
-  Parameters<ReturnType<KnownChannels[keyof KnownChannels]>['send']>
-
-export type MessageType<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
-  ChannelParams<KnownChannels>[0]
-
-export type NotifiableType<
-  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
-> = ChannelParams<KnownChannels>[1]
 
 export type ResponseType<KnownChannels extends Record<string, NotificationManagerChannelFactory>> =
   Awaited<ReturnType<ReturnType<KnownChannels[keyof KnownChannels]>['send']>>
@@ -143,6 +138,31 @@ export interface MailChannelContract {
     notifiable: RoutesNotificationsModel,
     deferred?: boolean
   ): Promise<void>
+}
+
+export interface NotificationManagerContract<
+  KnownChannels extends Record<string, NotificationManagerChannelFactory>,
+> {
+  send<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
+    notification: NotificationContract<Model>,
+    _deferred?: boolean
+  ): Promise<void | ResponseType<KnownChannels>[]>
+
+  sendLater<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
+    notification: NotificationContract<Model>
+  ): Promise<void>
+
+  use<K extends keyof KnownChannels>(channelName: K): ReturnType<KnownChannels[K]>
+}
+
+export interface Notifier<KnownChannels extends Record<string, NotificationManagerChannelFactory>> {
+  queue<Model extends NotifiableModel>(notification: {
+    notifiable: Model
+    notification: NotificationContract<Model>
+    channel: keyof KnownChannels
+  }): Promise<any>
 }
 
 /**

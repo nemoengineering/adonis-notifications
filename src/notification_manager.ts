@@ -6,15 +6,23 @@ import {
   NotificationContract,
   NotificationEvents,
   NotificationManagerChannelFactory,
+  NotificationManagerContract,
+  Notifier,
   ResponseType,
 } from './types.js'
 import debug from './debug.js'
 import string from '@poppinss/utils/string'
+import { MemoryQueueNotifier } from './notifiers/memory_queue.js'
 
 export class NotificationManager<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,
-> {
-  #emitter: EmitterLike<NotificationEvents<KnownChannels>>
+> implements NotificationManagerContract<KnownChannels>
+{
+  readonly #emitter: EmitterLike<NotificationEvents<KnownChannels>>
+
+  #channelCache: Partial<Record<keyof KnownChannels, NotificationChannelContract>> = {}
+
+  #notifier: Notifier<KnownChannels>
 
   #fakeChannel?: NotificationChannelContract
 
@@ -26,12 +34,27 @@ export class NotificationManager<
   ) {
     debug('creating notification manager %O', config)
     this.#emitter = emitter
+    this.#notifier = new MemoryQueueNotifier(this, this.#emitter)
   }
 
   async send<Model extends NotifiableModel>(
     notifiables: Model | Model[],
+    notification: NotificationContract<Model>
+  ) {
+    await this.#sendNotification(notifiables, notification)
+  }
+
+  async sendLater<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
+    notification: NotificationContract<Model>
+  ) {
+    await this.#sendNotification(notifiables, notification, true)
+  }
+
+  async #sendNotification<Model extends NotifiableModel>(
+    notifiables: Model | Model[],
     notification: NotificationContract<Model>,
-    _deferred?: boolean
+    deferred?: boolean
   ): Promise<void | ResponseType<KnownChannels>[]> {
     notifiables = Array.isArray(notifiables) ? notifiables : [notifiables]
 
@@ -60,10 +83,10 @@ export class NotificationManager<
         continue
       }
 
-      /*if (deferred) {
-        this.queue.push({ channel, message, notifiable }, this.queueMonitor as any)
+      if (deferred) {
+        await this.#queueNotification(notifiable, message, channel)
         continue
-      }*/
+      }
 
       const response = await this.use(channel).send(message, notifiable)
       responses.push(response)
@@ -73,14 +96,33 @@ export class NotificationManager<
     return responses
   }
 
-  async sendLater<Model extends NotifiableModel>(
-    notifiables: Model | Model[],
-    notification: NotificationContract<Model>
+  async #queueNotification<Model extends NotifiableModel>(
+    notifiable: Model,
+    notification: NotificationContract<Model>,
+    channel: keyof KnownChannels
   ) {
-    this.send(notifiables, notification, true)
+    this.#emitter.emit('notification:queueing', { notifiable, notification, channel })
+
+    debug('queueing notification')
+    const metaData = await this.#notifier.queue({ notifiable, notification, channel })
+
+    this.#emitter.emit('notification:queued', { notifiable, notification, channel, metaData })
   }
 
   use<K extends keyof KnownChannels>(channelName: K): ReturnType<KnownChannels[K]> {
-    return this.config.channels[channelName]() as ReturnType<KnownChannels[K]>
+    const cachedChannel = this.#channelCache[channelName]
+    if (cachedChannel) {
+      debug('using channel from cache. name: %s', cachedChannel)
+      return cachedChannel as ReturnType<KnownChannels[K]>
+    }
+
+    const channelFactory = this.config.channels[channelName]
+
+    debug('creating channel transport. name: "%s"', channelName)
+    const channel = channelFactory() as ReturnType<KnownChannels[K]>
+
+    this.#channelCache[channelName] = channel
+
+    return channel
   }
 }

@@ -4,7 +4,7 @@ import { compose } from '@poppinss/utils'
 import HasDatabaseNotifications from './has_database_notifications.js'
 
 /**
- * This trait is used to add the hability to notify a model using any channel
+ * This trait is used to add the ability to notify a model using any channel
  */
 function Notifiable(tableName: string): NotifiableMixin {
   return (superclass) => {
