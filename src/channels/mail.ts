@@ -1,5 +1,6 @@
 import { BaseMail } from '@adonisjs/mail'
 import { MailChannelConfig, MailChannelContract, NotifiableModel } from '../types.js'
+import mail from '@adonisjs/mail/services/main'
 
 class MailChannel implements MailChannelContract {
   constructor(_config: MailChannelConfig) {}
@@ -10,9 +11,9 @@ class MailChannel implements MailChannelContract {
     deferred: boolean = false
   ) {
     if (deferred) {
-      await message.sendLater()
+      await mail.sendLater(message)
     } else {
-      await message.send()
+      await mail.send(message)
     }
   }
 }

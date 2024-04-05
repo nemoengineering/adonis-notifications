@@ -4,7 +4,7 @@ import Event from '@ioc:Adonis/Core/Event'
 import { test } from '@japa/runner'
 import { createNotificationsTable, createUsersTable } from '../bin/test/database'
 import DatabaseChannel from '../src/channels/database.js'
-import MailChannel from '../src/channels/mail.ts.bak'
+import MailChannel from '../src/channels/mail'
 import NotificationManager from '../src/notification.ts.bak'
 
 test.group('NotificationManager', (group) => {
