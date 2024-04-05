@@ -1,0 +1,15 @@
+{{#var modelImportPath = generators.importPath('#models', model.path, modelFileName)}}
+{{{
+  exports({
+    to: app.makePath(app.rcFile.directories['notifications'], notificationFileName)
+  })
+}}}
+import { NotificationChannelName, NotificationContract } from '@verful/notifications/types'
+import type {{ modelName }} from '{{ modelImportPath }}'
+
+
+export default class {{ notificationName }} implements NotificationContract<{{ modelName }}> {
+  via(notifiable: {{ modelName }}): NotificationChannelName | Array<NotificationChannelName> {
+    return 'database'
+  }
+}

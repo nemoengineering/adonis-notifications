@@ -6,5 +6,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["tests", "test-helpers", "adonis-typings", "bin", "commands", "instructions.ts", "configure.ts"]
+  "exclude": ["tests", "test-helpers", "bin"]
 }

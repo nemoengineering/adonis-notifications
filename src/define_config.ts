@@ -1,11 +1,13 @@
 import {
   DatabaseChannelConfig,
+  MailChannelConfig,
   NotificationConfig,
   NotificationManagerChannelFactory,
 } from './types.js'
 import { ConfigProvider } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
 import type { DatabaseChannel } from './channels/database.js'
+import type { MailChannel } from './channels/mail.js'
 
 export type ResolvedConfig<
   KnownChannels extends Record<string, NotificationManagerChannelFactory>,
@@ -44,11 +46,18 @@ export function defineConfig<
 
 export const channels: {
   database: (config: DatabaseChannelConfig) => ConfigProvider<() => DatabaseChannel>
+  mail: (config: MailChannelConfig) => ConfigProvider<() => MailChannel>
 } = {
   database(config) {
     return configProvider.create(async () => {
       const { DatabaseChannel } = await import('./channels/database.js')
       return () => new DatabaseChannel(config)
+    })
+  },
+  mail(config) {
+    return configProvider.create(async () => {
+      const { MailChannel } = await import('./channels/mail.js')
+      return () => new MailChannel(config)
     })
   },
 }

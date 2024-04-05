@@ -2,7 +2,7 @@ import { BaseMail } from '@adonisjs/mail'
 import { MailChannelConfig, MailChannelContract, NotifiableModel } from '../types.js'
 import mail from '@adonisjs/mail/services/main'
 
-class MailChannel implements MailChannelContract {
+export class MailChannel implements MailChannelContract {
   constructor(_config: MailChannelConfig) {}
 
   async send(
@@ -17,5 +17,3 @@ class MailChannel implements MailChannelContract {
     }
   }
 }
-
-export default MailChannel
