@@ -47,6 +47,9 @@ export class NotificationManager<
     await this.#sendNotification(notifiables, notification)
   }
 
+  /**
+   * Send a notification asynchronously using a queue
+   */
   async sendLater<Model extends NotifiableModel>(
     notifiables: Model | Model[],
     notification: NotificationContract<Model>
