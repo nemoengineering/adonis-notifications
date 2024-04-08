@@ -8,7 +8,7 @@
   <p>Send notifications with ease</p>
 </div>
 
-Based on the good work of [nemoengineering/adonis-notifications](https://github.com/nemoengineering/adonis-notifications)
+Based on the good work of [verful/adonis-notifications](https://github.com/verful/adonis-notifications)
 
 ## **Pre-requisites**
 The `@nemoengineering/notifications` package requires `@adonisjs/core >= 6.2.0`
