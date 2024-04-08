@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/verful/notifications/raw/master/.github/banner.png" width="1200px">
+  <img src="https://github.com/nemoengineering/notifications/raw/main/.github/banner.png" width="1200px">
 </div>
 
 
@@ -8,32 +8,45 @@
   <p>Send notifications with ease</p>
 </div>
 
-<div align="center">
-
-[![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
-
-</div>
-
+Based on the good work of [nemoengineering/adonis-notifications](https://github.com/nemoengineering/adonis-notifications)
 
 ## **Pre-requisites**
-The `@verful/notifications` package requires `@adonisjs/core >= 5.4.2`
+The `@nemoengineering/notifications` package requires `@adonisjs/core >= 6.2.0`
 
-Also, it relies on `@adonisjs/lucid >= 16.3.2` for database notifications and on `@adonisjs/mail >= 7.2.4` for mail notifications.
+Also, it relies on `@adonisjs/lucid >= 20.5.1` for database notifications and on `@adonisjs/mail >= 9.2.1` for mail notifications.
 
 ## **Setup**
 
 Install the package from the npm registry as follows.
 
 ```
-npm i @verful/notifications
+npm i @nemoengineering/notifications
 # or
-yarn add @verful/notifications
+yarn add @nemoengineering/notifications
 ```
 
 Next, configure the package by running the following ace command.
 
 ```
-node ace configure @verful/notifications
+node ace configure @nemoengineering/notifications
+```
+
+And then add the path to the `tsconfig.json`
+
+```json
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "rootDir": "./",
+    "outDir": "./build",
+    "paths": {
+     ...
+      "#notifications/*": ["./app/notifications/*.js"]
+    }
+  }
+}
+
 ```
 
 ## **Generating Notifications**
@@ -41,7 +54,7 @@ Notifications are represented by a simple class, generally stored in the `app/No
 
 > `node ace make:notification TestNotification`
 
-The command will create a notification class in the `app/Notifications` directory. Each notification class contains a `via` method and any number of message builder methods, like `toMail` or `toDatabase`, that convert the notification to a message made for that channel.
+The command will create a notification class in the `app/notifications` directory. Each notification class contains a `via` method and any number of message builder methods, like `toMail` or `toDatabase`, that convert the notification to a message made for that channel.
 
 ## **Sending Notifications**
 
@@ -52,9 +65,9 @@ Notifications may be sent using the `notify` or the `notifyLater` methods of the
 First, apply the mixin on the model you are wanting to notify.
 
 ```typescript
-import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
-import { compose } from '@ioc:Adonis/Core/Helpers'
-import { Notifiable } from '@ioc:Verful/Notification/Mixins'
+import { BaseModel } from '@adonisjs/lucid/orm'
+import { compose } from '@adonisjs/core/helpers'
+import Notifiable from '@nemoengineering/notifications/mixins/notifiable'
 
 // Notifiable takes the notification table name as it's only param 
 export default class User extends compose(BaseModel, Notifiable('notifications')){
@@ -64,7 +77,8 @@ export default class User extends compose(BaseModel, Notifiable('notifications')
 Then use the `notify` or the `notifyLater` methods to notify the model.
 
 ```typescript
-import TestNotification from 'App/Notifications/TestNotification'
+import { TestNotification } from '#/notifiacations/test_notification.js'
+
 
 user.notify(new TestNotification())
 // Uses a in-memory queue to send the notification
@@ -76,15 +90,18 @@ user.notifyLater(new TestNotification())
 You can also use the `Notification` module to send notifications. Sending notifications this way is useful when you need to send a notification to multiple notifiables, like a array of users.
 
 ```typescript
-import Notification from '@ioc:Verful/Notification'
+import notification from '@nemoengineering/notifications/services/main'
+import { TestNotification } from '#/notifiacations/test_notification.js'
 
-Notification.send(users, new TestNotification())
+
+notification.send(users, new TestNotification())
 ```
 
 You can also delay notifications using the `sendLater` method. This method uses a in-memory queue to send the notifications.
 
 ```typescript
-import Notification from '@ioc:Verful/Notification'
+import notification from '@nemoengineering/notifications/services/main'
+import { TestNotification } from '#/notifiacations/test_notification.js'
 
 Notification.sendLater(users, new TestNotification())
 ```
@@ -98,8 +115,8 @@ Every notification class has a `via` method that determines which channels will 
 The `via` method receives a `notifiable` instance, that is a instance of the class which the notification is being sent. You may use the `notifiable` to determine which channels to sent the notification to.
 
 ```typescript
-class TestNotification implements NotificationContract {
-  public via(notifiable: User){
+class TestNotification implements NotificationContract<User> {
+  public via(notifiable: User): NotificationChannelName | NotificationChannelName[] {
     return notifiable.prefersEmail ? 'mail' : 'database'
   }
 }
@@ -116,33 +133,35 @@ If you want to send a notification via e-mail, you should define a `toMail` meth
 > If you want to use a mail driver other than default driver to send the notification, you can define it in the mailer class
 
 ```typescript
-class TestMailer extends BaseMailer {
-  constructor(private user: User){
+// app/mails/test_mail.ts
+export default class TestMail extends BaseMail {
+  from = 'test@example.com'
+  subject = 'Test email'
+
+  constructor(private user: User) {
     super()
   }
-
-  public prepare(message){
-    message
-      .subject('Test email')
-      .from('test@example.com')
-      .to(this.user.email)
+  
+  prepare() {
+    this.message.to(this.user.email)
   }
 }
 
-class TestNotification implements NotificationContract {
+// app/notifications/test_notification.ts
+class TestNotification implements NotificationContract<User> {
   public toMail(notifiable: User){
-    return new TestMailer(notifiable)
+    return new TestMail(notifiable)
   }
 }
 ```
 
-> Mail notifications requires [@adonisjs/mail](https://github.com/adonisjs/mail)  >= 7.2.4
+> Mail notifications requires [@adonisjs/mail](https://github.com/adonisjs/mail)  >=  9.2.1
 
 ## **Database Notifications**
 
 The `database` channel stores the notification in a database table. This table contain the notification, and a JSON object that describes the notification
 
-> Database notifications requires [@adonisjs/lucid](https://github.com/adonisjs/lucid) >= 16.3.2
+> Database notifications requires [@adonisjs/lucid](https://github.com/adonisjs/lucid) >= 20.5.1
 
 You can query the table to display the notifications in your UI. But, before you can do that, you need to create a table to store the notifications. You may use the `notifications:table` ace command to generate a migration with the correct table schema. 
 
@@ -156,7 +175,7 @@ node ace migration:run
 If you want to store a notification in a database, you should define a `toDatabase` method on the notification class. This method receives the `notifiable` entity and should return a javascript object that can be transformed in JSON
 
 ```typescript
-class TestNotification implements NotificationContract {
+class TestNotification implements NotificationContract<User> {
   public toDatabase(notifiable: User){
     return {
       title: `Hello, ${notifiable.email}, this is a test notification`
@@ -165,9 +184,23 @@ class TestNotification implements NotificationContract {
 }
 ```
 
+### Typing the Database Notifications data
+
+In the notification config file the `DatabaseChannelData` Interface can be defined
+
+```typescript
+// config/notification.ts
+declare module '@nemoengineering/notifications/types' {
+  interface DatabaseChannelData {
+    title: string
+  }
+}
+
+```
+
 ### **Accessing the notifications**
 
-After notifications are stored, you can acess them from your notifiable model entities. The `Notifiable` mixin includes a `notifications` Lucid relationship that returns the notifications for that entity. You can use the notifications like any other Lucid relationship. By default, the `readNotifications` and `unreadNotifications` methods will sort the notifications using the `created_at` timestamp, with the most recent at the beginning.
+After notifications are stored, you can access them from your notifiable model entities. The `Notifiable` mixin includes a `notifications` Lucid relationship that returns the notifications for that entity. You can use the notifications like any other Lucid relationship. By default, the `readNotifications` and `unreadNotifications` methods will sort the notifications using the `created_at` timestamp, with the most recent at the beginning.
 
 ```typescript
 const user = User.findOrFail(1)
@@ -215,60 +248,27 @@ await user.markNotificationsAsRead()
 You may want to deliver notifications using other channels, for that, you can use any class that implements the `NotificationChannelContract`
 
 ```typescript
-import { NotificationChannelContract } from '@ioc:Verful/Notification'
+import { NotifiableModel, NotificationChannelContract } from '@nemoengineering/notifications/types'
 
-interface VoiceMessageContract {
+interface PushChannelContract {
   text: string
 }
 
-export default class VoiceChannel implements NotificationChannelContract {
-  /**
-   * Typing the notification argument guarantees type safety in the toChannel
-   * method of the notification, in this case toVoice
-   */
-  public send(notification: VoiceMessageContract, notifiable: NotifiableModel){}
+export class PushChannelContract implements NotificationChannelContract {
+  async send(data: PushChannelContract, to: NotifiableModel) {
+    // Implementation
+  }
 }
 ```
 
-After the channel is created, you must extend the `Notification` module, you can use a preload or a provider to do this
-
-```typescript
-// start/notification.ts
-import Notification from '@ioc:Verful/Notification'
-import VoiceChannel from 'App/Channels/VoiceChannel'
-
-Notification.extend('voice', () => new VoiceChannel())
-```
-
-Then you must setup the config and contract for your channel
+After the channel is created, you must register the channel in the notification config at `config/notification.ts`
 
 ```typescript
 // config/notification.ts
-{
+const notificationConfig = defineConfig({
   channels: {
-    voice: {
-      driver: 'voice'
-    }
-  }
-}
-
-// contracts/notification.ts
-interface NotificationChannelsList {
-  voice: {
-    implementation: VoiceChannel
-    config: {
-      driver: 'voice'
-    }
-  }
-}
+    ...
+    push: () => new PushChannel(),
+  },
+})
 ```
-
-
-[npm-image]: https://img.shields.io/npm/v/@verful/notifications.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@verful/notifications "npm"
-
-[license-image]: https://img.shields.io/npm/l/@verful/notifications?color=blueviolet&style=for-the-badge
-[license-url]: LICENSE.md "license"
-
-[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
-[typescript-url]:  "typescript"

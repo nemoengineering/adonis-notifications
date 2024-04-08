@@ -1,26 +1,10 @@
 {
+  "extends": "@adonisjs/tsconfig/tsconfig.package.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "lib": ["ES2022"],
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "removeComments": true,
-    "declaration": true,
     "rootDir": "./",
     "outDir": "./build",
-    "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "skipLibCheck": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["@types/node", "@adonisjs/core", "@adonisjs/lucid", "@adonisjs/mail"]
+    "emitDecoratorMetadata": true
   },
-  "include": ["./**/*"],
-  "exclude": ["./node_modules", "./build"]
+  "exclude": [ "test-helpers", "bin/test"]
 }
