@@ -101,10 +101,7 @@
     }
   },
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/verful/notifications.git"
-  },
+  "repository": "https://github.com/nemoengineering/adonis-notifications",
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/package"
   },
@@ -115,7 +112,7 @@
     }
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://npm.pkg.github.com"
   },
   "np": {
     "contents": ".",
