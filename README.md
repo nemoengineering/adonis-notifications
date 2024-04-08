@@ -46,7 +46,20 @@ And then add the path to the `tsconfig.json`
     }
   }
 }
+```
 
+and `package.json`
+
+```json
+{
+  "name": "adonis-app",
+  "version": "0.0.0",
+  "imports": {
+    ...
+    "#notifications/*": "./app/notifications/*.js"
+  },
+  ...
+}
 ```
 
 ## **Generating Notifications**
