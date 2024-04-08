@@ -68,7 +68,6 @@ export async function configure(command: Configure) {
   await codemods.updateRcFile((rcFile) => {
     rcFile.addProvider('@nemoengineering/notifications/notification_provider')
     rcFile.addCommand('@nemoengineering/notifications/commands')
+    rcFile.setDirectory('notifications', 'app/notifications')
   })
-
-  await codemods.updateRcFile((t) => t.setDirectory('notifications', 'app/notifications'))
 }
