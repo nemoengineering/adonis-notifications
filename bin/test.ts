@@ -3,11 +3,15 @@ import { snapshot } from '@japa/snapshot'
 import { fileSystem } from '@japa/file-system'
 import { expectTypeOf } from '@japa/expect-type'
 import { configure, processCLIArgs, run } from '@japa/runner'
-import { Expect, expect } from '@japa/expect'
+import { expect } from '@japa/expect'
 import { TestContext } from '@japa/runner/core'
-import { NotifiableModel } from '../src/types.js'
-import { NotificationChannelsList, NotificationContract } from '@ioc:Verful/Notification'
-import { BaseMailer } from '@ioc:Adonis/Addons/Mail'
+import {
+  HasDatabaseNotificationsModel,
+  NotifiableModel,
+  NotificationChannels,
+  NotificationContract,
+} from '../src/types.js'
+import { BaseMail } from '@adonisjs/mail'
 
 processCLIArgs(process.argv.splice(2))
 configure({
@@ -21,23 +25,23 @@ configure({
 })
 
 TestContext.macro('getNotifiable', async (tableName = 'notifications', persisted = true) => {
-  const { default: notifiableFactory } = await import('./test/notifiable_factory.js')
+  const { notifiableFactory } = await import('../tests/helpers.js')
   return notifiableFactory(tableName, persisted)
 })
-
-//TestContext.getter('app', () => require('@ioc:Adonis/Core/Application'))
 
 TestContext.macro(
   'getNotification',
   (
+    //@ts-expect-error
     channels = ['database'],
     toDatabase = {
       title: 'test',
     }
-  ): NotificationContract => ({
+  ): NotificationContract<NotifiableModel> => ({
     via() {
       return channels
     },
+    //@ts-expect-error
     toDatabase() {
       return toDatabase
     },
@@ -49,13 +53,13 @@ declare module '@japa/runner/core' {
     getNotifiable(
       tableName?: string,
       persisted?: boolean
-    ): Promise<NotifiableModel & { id: number }>
+    ): Promise<NotifiableModel & HasDatabaseNotificationsModel & { id: number }>
 
     getNotification(
-      channels?: (keyof NotificationChannelsList)[],
+      channels?: (keyof NotificationChannels)[],
       toDatabase?: Record<string, any>,
-      toMail?: InstanceType<typeof BaseMailer>
-    ): NotificationContract
+      toMail?: InstanceType<typeof BaseMail>
+    ): NotificationContract<NotifiableModel>
   }
 }
 

@@ -1,8 +1,7 @@
 import { test } from '@japa/runner'
 import HasDatabaseNotifications from '../../../src/mixins/has_database_notifications.js'
-import { createNotification } from '../../../bin/test/helpers.js'
 import { DateTime } from 'luxon'
-import { createDatabase, createTables } from '../../helpers.js'
+import { createDatabase, createNotification, createTables } from '../../helpers.js'
 import { BaseModel } from '@adonisjs/lucid/orm'
 
 test.group('HasDatabaseNotificationsMixin', (group) => {

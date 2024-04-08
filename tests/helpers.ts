@@ -2,12 +2,18 @@ import { Emitter } from '@adonisjs/core/events'
 import { AppFactory } from '@adonisjs/core/factories/app'
 import { LoggerFactory } from '@adonisjs/core/factories/logger'
 import { Database } from '@adonisjs/lucid/database'
-import { getActiveTest } from '@japa/runner'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { BaseModel } from '@adonisjs/lucid/orm'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { configDotenv } from 'dotenv'
 import { Test } from '@japa/runner/core'
+import {
+  DatabaseNotificationRow,
+  HasDatabaseNotificationsModel,
+  NotifiableModel,
+} from '../src/types.js'
+import { compose } from '@poppinss/utils'
+import Notifiable from '../src/mixins/notifiable.js'
 
 configDotenv()
 
@@ -15,12 +21,6 @@ configDotenv()
  * Creates an instance of the database class for making queries
  */
 export async function createDatabase(test: Test) {
-  /*const test = getActiveTest()
-  if (!test) {
-    throw new Error('Cannot use "createDatabase" outside of a Japa test')
-  }*/
-
-  console.log(test.context.fs.basePath)
   await mkdir(test.context.fs.basePath)
 
   const app = new AppFactory().create(test.context.fs.baseUrl, () => {})
@@ -84,11 +84,6 @@ export async function createDatabase(test: Test) {
  * Creates needed database tables
  */
 export async function createTables(db: Database, test: Test) {
-  /*const test = getActiveTest()
-  if (!test) {
-    throw new Error('Cannot use "createTables" outside of a Japa test')
-  }*/
-
   test.cleanup(async () => {
     await db.connection().schema.dropTable('notifications')
     await db.connection().schema.dropTable('users')
@@ -105,5 +100,27 @@ export async function createTables(db: Database, test: Test) {
     table.timestamp('read_at', { useTz: true })
     table.timestamp('created_at', { useTz: true })
     table.timestamp('updated_at', { useTz: true })
+  })
+}
+
+export async function notifiableFactory(
+  tableName = 'notifications',
+  persisted = true
+): Promise<NotifiableModel & HasDatabaseNotificationsModel & { id: number }> {
+  class User extends compose(BaseModel, Notifiable(tableName)) {
+    @column({ isPrimary: true })
+    declare id: number
+  }
+
+  return persisted ? User.create({}) : new User()
+}
+
+export async function createNotification(
+  model: HasDatabaseNotificationsModel,
+  overrides?: Partial<DatabaseNotificationRow>
+) {
+  return model.related('notifications').create({
+    data: { title: 'test' },
+    ...overrides,
   })
 }

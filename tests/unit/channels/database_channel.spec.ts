@@ -1,17 +1,11 @@
-import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
-import { createNotificationsTable, createUsersTable } from '../../bin/test/database'
-import DatabaseChannel from '../../src/channels/database.js'
+import { createDatabase, createTables } from '../../helpers.js'
+import { DatabaseChannel } from '../../../src/channels/database.js'
 
 test.group('DatabaseChannel', (group) => {
-  group.each.setup(async () => {
-    await createUsersTable()
-    await createNotificationsTable()
-  })
-
-  group.each.teardown(async () => {
-    await Database.connection().truncate('notifications')
-    await Database.connection().truncate('users')
+  group.each.setup(async (t) => {
+    const db = await createDatabase(t)
+    await createTables(db, t)
   })
 
   test('DatabaseChannel.send', async ({ getNotifiable, expect }) => {

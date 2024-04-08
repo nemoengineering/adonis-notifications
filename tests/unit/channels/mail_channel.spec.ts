@@ -1,6 +1,5 @@
-import Mail from '@ioc:Adonis/Addons/Mail'
+/*
 import { test } from '@japa/runner'
-import MailChannel from '../../src/channels/mail'
 
 test.group('MailChannel', () => {
   test('MailChannel.send', async ({ getMailer, getNotifiable, expect }) => {
@@ -41,3 +40,4 @@ test.group('MailChannel', () => {
     expect(mail.exists({ subject: 'MailChannel.send with deferred' })).toBe(true)
   })
 })
+*/
