@@ -3,6 +3,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace'
 
 import { stubsRoot } from '../stubs/main.js'
 import StringBuilder from '@poppinss/utils/string_builder'
+import string from '@poppinss/utils/string'
 
 export default class MakeNotification extends BaseCommand {
   static commandName = 'make:notification'
@@ -51,6 +52,8 @@ function notificationName(name: string) {
   return new StringBuilder(name)
     .removeExtension()
     .removeSuffix('notification')
+    .removeSuffix('provision')
     .pascalCase()
+    .suffix(string.pascalCase('notification'))
     .toString()
 }
