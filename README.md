@@ -16,7 +16,7 @@
 
 
 ## **Pre-requisites**
-The `@verful/notifications` package requires `@adonisjs/core >= 5.4.2`
+The `@nemoengineering/notifications` package requires `@adonisjs/core >= 5.4.2`
 
 Also, it relies on `@adonisjs/lucid >= 16.3.2` for database notifications and on `@adonisjs/mail >= 7.2.4` for mail notifications.
 
@@ -25,15 +25,15 @@ Also, it relies on `@adonisjs/lucid >= 16.3.2` for database notifications and on
 Install the package from the npm registry as follows.
 
 ```
-npm i @verful/notifications
+npm i @nemoengineering/notifications
 # or
-yarn add @verful/notifications
+yarn add @nemoengineering/notifications
 ```
 
 Next, configure the package by running the following ace command.
 
 ```
-node ace configure @verful/notifications
+node ace configure @nemoengineering/notifications
 ```
 
 ## **Generating Notifications**
@@ -264,10 +264,10 @@ interface NotificationChannelsList {
 ```
 
 
-[npm-image]: https://img.shields.io/npm/v/@verful/notifications.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@verful/notifications "npm"
+[npm-image]: https://img.shields.io/npm/v/@nemoengineering/notifications.svg?style=for-the-badge&logo=npm
+[npm-url]: https://npmjs.org/package/@nemoengineering/notifications "npm"
 
-[license-image]: https://img.shields.io/npm/l/@verful/notifications?color=blueviolet&style=for-the-badge
+[license-image]: https://img.shields.io/npm/l/@nemoengineering/notifications?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript

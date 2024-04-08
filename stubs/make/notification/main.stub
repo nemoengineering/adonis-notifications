@@ -4,7 +4,7 @@
     to: app.makePath(app.rcFile.directories['notifications'], notificationFileName)
   })
 }}}
-import { NotificationChannelName, NotificationContract } from '@verful/notifications/types'
+import { NotificationChannelName, NotificationContract } from '@nemoengineering/notifications/types'
 import type {{ modelName }} from '{{ modelImportPath }}'
 
 

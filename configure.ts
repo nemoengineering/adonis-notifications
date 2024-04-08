@@ -66,8 +66,8 @@ export async function configure(command: Configure) {
    * Publish provider and command
    */
   await codemods.updateRcFile((rcFile) => {
-    rcFile.addProvider('@verful/notifications/notification_provider')
-    rcFile.addCommand('@verful/notifications/commands')
+    rcFile.addProvider('@nemoengineering/notifications/notification_provider')
+    rcFile.addCommand('@nemoengineering/notifications/commands')
   })
 
   await codemods.updateRcFile((t) => t.setDirectory('notifications', 'app/notifications'))

@@ -1,7 +1,7 @@
 {{{
   exports({ to: app.configPath('notification.ts') })
 }}}
-import { channels, defineConfig } from '@verful/notifications'
+import { channels, defineConfig } from '@nemoengineering/notifications'
 
 const notificationConfig = defineConfig({
   channels: { {{#if channels.includes("database") }}
@@ -13,7 +13,7 @@ const notificationConfig = defineConfig({
 
 export default notificationConfig
 
-declare module '@verful/notifications/types' {
+declare module '@nemoengineering/notifications/types' {
   interface NotificationChannels extends InferChannels<typeof notificationConfig> {}
 {{#if channels.includes("database") }}
   // Use this to type the database notification data
