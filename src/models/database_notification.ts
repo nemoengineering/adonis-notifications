@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import { DatabaseNotificationModel, DatabaseNotificationRow } from '../types.js'
-import StaticImplements from '../helpers/StaticImplements.js'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { LucidModel } from '@adonisjs/lucid/types/model'
+import StaticImplements from '../helpers/static_implements.js'
 
 export default function createNotificationModel(tableName: string): DatabaseNotificationModel {
   @StaticImplements<DatabaseNotificationModel>()
